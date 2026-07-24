@@ -1,0 +1,56 @@
+# maven ignore
+*.war
+*.zip
+*.tar
+*.tar.gz
+target/
+/release/
+/log/
+
+# eclipse ignore
+.settings/
+.project 
+.classpath
+
+# idea  ignore
+.idea/
+.vscode/
+*.ipr
+*.iml
+*.iws
+
+# temp ignore
+logs/
+*.doc
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# system  ignore
+.DS_Store
+Thumbs.db
+
+*.class
+
+# Node dependencies and generated web bundles
+node_modules/
+dist/
+/source/vue/xzs-admin/admin/
+/source/vue/xzs-admin/public/admin/
+/source/vue/xzs-student/student/
+/source/xzs/src/main/resources/static/
+
+# Local configuration and secrets
+.env.local
+.env.*.local
+application-local.yml
+*.jks
+*.p12
+*.pem
+
+# Local toolchains and databases
+.toolchains/
+*.db
+*.sqlite

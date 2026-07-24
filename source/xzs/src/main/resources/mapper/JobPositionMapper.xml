@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mindskip.xzs.repository.JobPositionMapper">
+  <resultMap id="BaseResultMap" type="com.mindskip.xzs.domain.JobPosition">
+    <id column="id" property="id"/>
+    <result column="code" property="code"/>
+    <result column="name" property="name"/>
+    <result column="item_order" property="itemOrder"/>
+    <result column="enabled" property="enabled"/>
+    <result column="deleted" property="deleted"/>
+  </resultMap>
+  <sql id="columns">id, code, name, item_order, enabled, deleted</sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select <include refid="columns"/> from t_job_position where id = #{id}
+  </select>
+  <select id="selectEnabled" resultMap="BaseResultMap">
+    select <include refid="columns"/> from t_job_position
+    where deleted = 0 and enabled = 1 order by item_order, id
+  </select>
+  <insert id="insert" parameterType="com.mindskip.xzs.domain.JobPosition" useGeneratedKeys="true" keyProperty="id">
+    insert into t_job_position(code, name, item_order, enabled, deleted)
+    values(#{code}, #{name}, #{itemOrder}, #{enabled}, #{deleted})
+  </insert>
+  <insert id="insertSelective" parameterType="com.mindskip.xzs.domain.JobPosition" useGeneratedKeys="true" keyProperty="id">
+    insert into t_job_position(code, name, item_order, enabled, deleted)
+    values(#{code}, #{name}, coalesce(#{itemOrder}, 0), coalesce(#{enabled}, 1), coalesce(#{deleted}, 0))
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.mindskip.xzs.domain.JobPosition">
+    update t_job_position
+    <set>
+      <if test="code != null">code = #{code},</if>
+      <if test="name != null">name = #{name},</if>
+      <if test="itemOrder != null">item_order = #{itemOrder},</if>
+      <if test="enabled != null">enabled = #{enabled},</if>
+      <if test="deleted != null">deleted = #{deleted},</if>
+    </set>
+    where id = #{id}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.mindskip.xzs.domain.JobPosition">
+    update t_job_position set code=#{code}, name=#{name}, item_order=#{itemOrder},
+      enabled=#{enabled}, deleted=#{deleted} where id=#{id}
+  </update>
+  <delete id="deleteByPrimaryKey">delete from t_job_position where id = #{id}</delete>
+</mapper>

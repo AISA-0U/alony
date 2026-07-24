@@ -1,0 +1,2 @@
+chcp 65001
+java -Xms512m -Xmx1024m -Dfile.encoding=UTF-8 -jar xzs-3.9.0.jar
