@@ -24,6 +24,30 @@ Position-based examination system built with Spring Boot, MySQL, Vue 2, and a We
 - Student frontend: `source/vue/xzs-student`.
 - WeChat mini program: `source/wx/xzs-student`.
 
+### Local Windows environment
+
+The repository includes repeatable PowerShell scripts for an isolated D-drive setup:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/local/setup-local.ps1
+powershell -ExecutionPolicy Bypass -File scripts/local/start-local.ps1
+```
+
+The setup uses portable MySQL 8.0.42, Java 8, Maven 3.9, and Node 16.20.2. It creates `.env.local`, imports both SQL files,
+generates a local RSA key pair, and resets the demo account passwords. Runtime data and
+secrets are stored outside the repository under `D:\testvue\.runtime\xzs-exam` and are not
+committed. Stop all local services with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/local/stop-local.ps1
+```
+
+Local URLs:
+
+- Backend: `http://localhost:8000`
+- Student: `http://localhost:8001`
+- Admin: `http://localhost:8002`
+
 Question data and real position records are intentionally not included. Search for `TODO(EXAM-BANK)` for pending data-integration points.
 
 ## License
