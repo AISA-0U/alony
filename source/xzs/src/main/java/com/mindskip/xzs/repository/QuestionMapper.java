@@ -22,6 +22,18 @@ public interface QuestionMapper extends BaseMapper<Question> {
                                         @Param("questionTypes") List<Integer> questionTypes,
                                         @Param("limit") Integer limit);
 
+    List<String> selectExistingTitles(@Param("subjectId") Integer subjectId,
+                                      @Param("bankType") Integer bankType,
+                                      @Param("positionId") Integer positionId,
+                                      @Param("titles") List<String> titles);
+
+    List<Question> selectExistingQuestions(@Param("subjectId") Integer subjectId,
+                                           @Param("bankType") Integer bankType,
+                                           @Param("positionId") Integer positionId,
+                                           @Param("titles") List<String> titles);
+
+    int softDeleteByIds(@Param("ids") List<Integer> ids);
+
     Integer selectAllCount();
 
     List<KeyValue> selectCountByDate(@Param("startTime") Date startTime,@Param("endTime") Date endTime);

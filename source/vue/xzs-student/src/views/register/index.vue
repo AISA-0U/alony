@@ -19,12 +19,7 @@
                         placeholder="密码" name="password" tabindex="2" auto-complete="on"
                         @keyup.enter.native="handleLogin"/>
             </div>
-            <div class="lowin-group">
-              <label>部门 </label>
-              <el-select class="lowin-input" v-model="loginForm.userLevel" placeholder="部门">
-                <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
-              </el-select>
-            </div>
+            <!-- 部门选择已隐藏，注册用户使用兼容默认层级 1。 -->
             <el-button type="text" class="lowin-btn login-btn" @click.native.prevent="handleRegister">注册</el-button>
             <div class="text-foot">
               已有账号?

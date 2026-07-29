@@ -25,11 +25,7 @@
       <el-form-item label="手机：">
         <el-input v-model="form.phone"></el-input>
       </el-form-item>
-      <el-form-item label="部门：" prop="userLevel" required>
-        <el-select v-model="form.userLevel" placeholder="部门">
-          <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
-        </el-select>
-      </el-form-item>
+      <!-- 部门选择已隐藏，新用户使用兼容默认层级 1。 -->
       <el-form-item label="状态：" required>
         <el-select v-model="form.status" placeholder="状态">
           <el-option v-for="item in statusEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
@@ -61,7 +57,7 @@ export default {
         sex: '',
         birthDay: null,
         phone: null,
-        userLevel: null
+        userLevel: 1
       },
       formLoading: false,
       rules: {
@@ -71,9 +67,7 @@ export default {
         realName: [
           { required: true, message: '请输入真实姓名', trigger: 'blur' }
         ],
-        userLevel: [
-          { required: true, message: '请选择部门', trigger: 'change' }
-        ]
+        userLevel: [{ required: true, message: '用户配置无效', trigger: 'change' }]
       }
     }
   },
@@ -126,7 +120,7 @@ export default {
         sex: '',
         birthDay: null,
         phone: null,
-        userLevel: null
+        userLevel: 1
       }
       this.form.id = lastId
     },

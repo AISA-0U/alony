@@ -255,6 +255,58 @@
     LIMIT #{limit}
   </select>
 
+  <select id="selectExistingTitles" resultType="java.lang.String">
+    SELECT JSON_UNQUOTE(JSON_EXTRACT(tc.content, '$.titleContent'))
+    FROM t_question q
+    INNER JOIN t_text_content tc ON tc.id = q.info_text_content_id
+    WHERE q.deleted = 0
+      AND q.subject_id = #{subjectId}
+      AND q.bank_type = #{bankType}
+    <choose>
+      <when test="positionId == null">
+        AND q.position_id IS NULL
+      </when>
+      <otherwise>
+        AND q.position_id = #{positionId}
+      </otherwise>
+    </choose>
+      AND JSON_UNQUOTE(JSON_EXTRACT(tc.content, '$.titleContent')) IN
+    <foreach item="title" collection="titles" open="(" separator="," close=")">
+      #{title}
+    </foreach>
+  </select>
+
+  <select id="selectExistingQuestions" resultMap="BaseResultMap">
+    SELECT q.*
+    FROM t_question q
+    INNER JOIN t_text_content tc ON tc.id = q.info_text_content_id
+    WHERE q.deleted = 0
+      AND q.subject_id = #{subjectId}
+      AND q.bank_type = #{bankType}
+    <choose>
+      <when test="positionId == null">
+        AND q.position_id IS NULL
+      </when>
+      <otherwise>
+        AND q.position_id = #{positionId}
+      </otherwise>
+    </choose>
+      AND JSON_UNQUOTE(JSON_EXTRACT(tc.content, '$.titleContent')) IN
+    <foreach item="title" collection="titles" open="(" separator="," close=")">
+      #{title}
+    </foreach>
+  </select>
+
+  <update id="softDeleteByIds">
+    UPDATE t_question
+    SET deleted = 1
+    WHERE deleted = 0
+      AND id IN
+    <foreach item="id" collection="ids" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </update>
+
 
   <select id="selectAllCount"  resultType="java.lang.Integer">
 		SELECT count(*) from t_question where  deleted=0

@@ -2,14 +2,10 @@
   <div class="app-container">
 
     <el-form :model="form" ref="form" label-width="100px" v-loading="formLoading">
-      <el-form-item label="学科：" required>
+      <el-form-item label="科目：" required>
         <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="部门：" required>
-        <el-select v-model="form.level" placeholder="部门">
-          <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
-        </el-select>
-      </el-form-item>
+      <!-- 部门选择已隐藏，保留 level=1 兼容现有后端数据结构。 -->
       <el-form-item>
         <el-button type="primary" @click="submitForm">提交</el-button>
         <el-button @click="resetForm">重置</el-button>

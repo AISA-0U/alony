@@ -17,7 +17,7 @@
           <el-divider/>
           <el-row class="user-info-fullInfo">
             <label>姓名：{{form.realName}}</label><br/>
-            <label>部门：{{levelFormatter(form.userLevel)}}</label><br/>
+            <!-- 部门信息已隐藏。 -->
             <label>注册时间：{{form.createTime}}</label><br/>
           </el-row>
         </el-card>
@@ -56,12 +56,7 @@
                 <el-form-item label="手机：">
                   <el-input v-model="form.phone"></el-input>
                 </el-form-item>
-                <el-form-item label="部门：" prop="userLevel" required>
-                  <el-select v-model="form.userLevel" placeholder="部门">
-                    <el-option v-for="item in levelEnum" :key="item.key" :value="item.key"
-                               :label="item.value"></el-option>
-                  </el-select>
-                </el-form-item>
+                <!-- 部门选择已隐藏，保留原 userLevel 兼容后端。 -->
                 <el-form-item>
                   <el-button type="primary" @click="submitForm">更新</el-button>
                 </el-form-item>
@@ -98,9 +93,7 @@ export default {
         realName: [
           { required: true, message: '请输入真实姓名', trigger: 'blur' }
         ],
-        userLevel: [
-          { required: true, message: '请选择部门', trigger: 'change' }
-        ]
+        userLevel: [{ required: true, message: '用户配置无效', trigger: 'change' }]
       }
     }
   },

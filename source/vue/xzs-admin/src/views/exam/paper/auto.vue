@@ -7,12 +7,8 @@
           <el-option v-for="item in positions" :key="item.id" :value="item.id" :label="item.name" />
         </el-select>
       </el-form-item>
-      <el-form-item label="部门" prop="level">
-        <el-select v-model="form.level" @change="levelChange">
-          <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="学科" prop="subjectId">
+      <!-- 部门选择已隐藏，自动组卷直接按科目筛选。 -->
+      <el-form-item label="科目" prop="subjectId">
         <el-select v-model="form.subjectId">
           <el-option v-for="item in subjectFilter" :key="item.id" :value="item.id" :label="item.name" />
         </el-select>
@@ -55,7 +51,6 @@ export default {
       form: {
         name: '',
         positionId: null,
-        level: null,
         subjectId: null,
         paperType: 1,
         suggestTime: 60,
@@ -71,8 +66,7 @@ export default {
       rules: {
         name: [{ required: true, message: '请输入试卷名称', trigger: 'blur' }],
         positionId: [{ required: true, message: '请选择考核职位', trigger: 'change' }],
-        level: [{ required: true, message: '请选择部门', trigger: 'change' }],
-        subjectId: [{ required: true, message: '请选择学科', trigger: 'change' }]
+        subjectId: [{ required: true, message: '请选择科目', trigger: 'change' }]
       }
     }
   },
@@ -81,10 +75,6 @@ export default {
     jobPositionApi.list().then(re => { this.positions = re.response || [] })
   },
   methods: {
-    levelChange () {
-      this.form.subjectId = null
-      this.subjectFilter = this.subjects.filter(item => item.level === this.form.level)
-    },
     generate () {
       this.$refs.form.validate(valid => {
         if (!valid) return
@@ -103,8 +93,7 @@ export default {
     ...mapActions('exam', { initSubject: 'initSubject' })
   },
   computed: {
-    ...mapState('exam', { subjects: state => state.subjects }),
-    ...mapState('enumItem', { levelEnum: state => state.user.levelEnum })
+    ...mapState('exam', { subjects: state => state.subjects })
   }
 }
 </script>

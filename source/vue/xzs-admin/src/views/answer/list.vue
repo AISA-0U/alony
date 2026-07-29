@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParam" ref="queryForm" :inline="true">
-      <el-form-item label="学科：" >
+      <el-form-item label="科目：" >
         <el-select v-model="queryParam.subjectId"  clearable>
           <el-option v-for="item in subjects" :key="item.id" :value="item.id" :label="item.name"></el-option>
         </el-select>

@@ -1,11 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParam" ref="queryForm" :inline="true">
-      <el-form-item label="部门：">
-        <el-select v-model="queryParam.gradeLevel" placeholder="部门" clearable>
-          <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
-        </el-select>
-      </el-form-item>
+      <!-- 部门筛选已隐藏。 -->
       <el-form-item>
         <el-button type="primary" @click="submitForm">查询</el-button>
       </el-form-item>

@@ -11,9 +11,29 @@ $env:SPRING_PROFILES_ACTIVE = 'dev'
 $env:JAVA_HOME = $script:JdkHome
 $env:Path = "$(Join-Path $script:JdkHome 'bin');$env:Path"
 
+function Test-ExecutableBackendJar {
+    param([string]$JarPath)
+
+    if (-not (Test-Path -LiteralPath $JarPath)) {
+        return $false
+    }
+
+    try {
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        $archive = [System.IO.Compression.ZipFile]::OpenRead($JarPath)
+        try {
+            return $null -ne $archive.GetEntry('BOOT-INF/classes/com/mindskip/xzs/XzsApplication.class')
+        } finally {
+            $archive.Dispose()
+        }
+    } catch {
+        return $false
+    }
+}
+
 $backendRoot = Join-Path $script:RepoRoot 'source\xzs'
 $backendJar = Join-Path $backendRoot 'target\xzs-3.9.0.jar'
-$needsBackendBuild = -not (Test-Path -LiteralPath $backendJar)
+$needsBackendBuild = -not (Test-ExecutableBackendJar -JarPath $backendJar)
 if (-not $needsBackendBuild) {
     $jarTimestamp = (Get-Item -LiteralPath $backendJar).LastWriteTimeUtc
     $newerBackendInput = Get-ChildItem (Join-Path $backendRoot 'src'), (Join-Path $backendRoot 'pom.xml') `
@@ -26,6 +46,9 @@ if ($needsBackendBuild) {
     $mavenRepo = Join-Path $script:ToolchainRoot 'm2'
     & $maven -s $settings "-Dmaven.repo.local=$mavenRepo" -DskipTests package -f (Join-Path $backendRoot 'pom.xml')
     if ($LASTEXITCODE -ne 0) { throw 'Backend build failed.' }
+    if (-not (Test-ExecutableBackendJar -JarPath $backendJar)) {
+        throw 'Backend build did not produce an executable Spring Boot JAR.'
+    }
 }
 
 Start-TrackedProcess -Name 'backend' -FilePath (Join-Path $script:JdkHome 'bin\java.exe') `

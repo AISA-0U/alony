@@ -1,15 +1,11 @@
 <template>
   <div class="app-container">
     <el-form :model="form" ref="form" label-width="100px" v-loading="formLoading" :rules="rules">
-      <el-form-item label="部门：" prop="level" required>
-        <el-select v-model="form.level" placeholder="部门"  @change="levelChange">
-          <el-option v-for="item in levelEnum" :key="item.key" :value="item.key" :label="item.value"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="学科：" prop="subjectId" required>
-        <el-select v-model="form.subjectId" placeholder="学科">
+      <!-- 部门选择已隐藏，level 由所选科目自动同步。 -->
+      <el-form-item label="科目：" prop="subjectId" required>
+        <el-select v-model="form.subjectId" placeholder="科目" @change="subjectChange">
           <el-option v-for="item in subjectFilter" :key="item.id" :value="item.id"
-                     :label="item.name+' ( '+item.levelName+' )'"></el-option>
+                     :label="item.name"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="试卷类型：" prop="paperType" required>
@@ -113,10 +109,10 @@ export default {
       formLoading: false,
       rules: {
         level: [
-          { required: true, message: '请选择部门', trigger: 'change' }
+          { required: true, message: '科目配置无效', trigger: 'change' }
         ],
         subjectId: [
-          { required: true, message: '请选择学科', trigger: 'change' }
+          { required: true, message: '请选择科目', trigger: 'change' }
         ],
         paperType: [
           { required: true, message: '请选择试卷类型', trigger: 'change' }
@@ -213,9 +209,9 @@ export default {
       })
       this.questionPage.showDialog = false
     },
-    levelChange () {
-      this.form.subjectId = null
-      this.subjectFilter = this.subjects.filter(data => data.level === this.form.level)
+    subjectChange (subjectId) {
+      const subject = this.subjects.find(item => item.id === subjectId)
+      this.form.level = subject ? subject.level : null
     },
     search () {
       this.questionPage.queryParam.subjectId = this.form.subjectId

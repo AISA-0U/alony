@@ -24,4 +24,10 @@ public interface QuestionService extends BaseService<Question> {
     List<Integer> selectMothCount();
 
     int importQuestions(List<QuestionEditRequestVM> questions, Integer userId);
+
+    List<String> findExistingTitles(List<QuestionEditRequestVM> questions);
+
+    List<QuestionEditRequestVM> filterNewQuestions(List<QuestionEditRequestVM> questions);
+
+    int softDeleteQuestions(List<Integer> ids);
 }

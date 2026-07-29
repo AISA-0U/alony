@@ -54,6 +54,10 @@ pagehelper:
 
 #mybatis datasource default HikariPool
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   datasource:
     hikari:
       idle-timeout: 600000  #10 min

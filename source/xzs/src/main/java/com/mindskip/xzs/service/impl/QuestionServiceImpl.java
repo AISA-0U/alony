@@ -8,6 +8,7 @@ import com.mindskip.xzs.domain.enums.QuestionTypeEnum;
 import com.mindskip.xzs.domain.question.QuestionItemObject;
 import com.mindskip.xzs.domain.question.QuestionObject;
 import com.mindskip.xzs.repository.QuestionMapper;
+import com.mindskip.xzs.service.QuestionDuplicateChecker;
 import com.mindskip.xzs.service.QuestionService;
 import com.mindskip.xzs.service.SubjectService;
 import com.mindskip.xzs.service.TextContentService;
@@ -26,7 +27,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -201,6 +207,71 @@ public class QuestionServiceImpl extends BaseServiceImpl<Question> implements Qu
             insertFullQuestion(question, userId);
         }
         return questions.size();
+    }
+
+    @Override
+    public List<String> findExistingTitles(List<QuestionEditRequestVM> questions) {
+        Map<String, List<QuestionEditRequestVM>> scopes = new LinkedHashMap<>();
+        for (QuestionEditRequestVM question : questions) {
+            String scopeKey = question.getSubjectId() + ":" + question.getBankType() + ":" + question.getPositionId();
+            scopes.computeIfAbsent(scopeKey, key -> new ArrayList<>()).add(question);
+        }
+
+        List<String> existingTitles = new ArrayList<>();
+        for (List<QuestionEditRequestVM> scopeQuestions : scopes.values()) {
+            QuestionEditRequestVM scope = scopeQuestions.get(0);
+            List<String> titles = scopeQuestions.stream()
+                    .map(QuestionEditRequestVM::getTitle)
+                    .collect(Collectors.toList());
+            existingTitles.addAll(questionMapper.selectExistingTitles(scope.getSubjectId(), scope.getBankType(),
+                    scope.getPositionId(), titles));
+        }
+        return existingTitles;
+    }
+
+    @Override
+    public List<QuestionEditRequestVM> filterNewQuestions(List<QuestionEditRequestVM> questions) {
+        Map<String, List<QuestionEditRequestVM>> scopes = groupByScope(questions);
+        Set<String> existingFingerprints = new LinkedHashSet<>();
+        for (List<QuestionEditRequestVM> scopeQuestions : scopes.values()) {
+            QuestionEditRequestVM scope = scopeQuestions.get(0);
+            List<String> titles = scopeQuestions.stream()
+                    .map(QuestionEditRequestVM::getTitle)
+                    .distinct()
+                    .collect(Collectors.toList());
+            List<Question> existingQuestions = questionMapper.selectExistingQuestions(
+                    scope.getSubjectId(), scope.getBankType(), scope.getPositionId(), titles);
+            for (Question existingQuestion : existingQuestions) {
+                existingFingerprints.add(QuestionDuplicateChecker.fingerprint(
+                        getQuestionEditRequestVM(existingQuestion)));
+            }
+        }
+
+        Set<String> currentFingerprints = new LinkedHashSet<>();
+        List<QuestionEditRequestVM> newQuestions = new ArrayList<>();
+        for (QuestionEditRequestVM question : questions) {
+            String fingerprint = QuestionDuplicateChecker.fingerprint(question);
+            if (!existingFingerprints.contains(fingerprint) && currentFingerprints.add(fingerprint)) {
+                newQuestions.add(question);
+            }
+        }
+        return newQuestions;
+    }
+
+    @Override
+    @Transactional
+    public int softDeleteQuestions(List<Integer> ids) {
+        List<Integer> distinctIds = new ArrayList<>(new LinkedHashSet<>(ids));
+        return questionMapper.softDeleteByIds(distinctIds);
+    }
+
+    private Map<String, List<QuestionEditRequestVM>> groupByScope(List<QuestionEditRequestVM> questions) {
+        Map<String, List<QuestionEditRequestVM>> scopes = new LinkedHashMap<>();
+        for (QuestionEditRequestVM question : questions) {
+            String scopeKey = question.getSubjectId() + ":" + question.getBankType() + ":" + question.getPositionId();
+            scopes.computeIfAbsent(scopeKey, key -> new ArrayList<>()).add(question);
+        }
+        return scopes;
     }
 
 
